@@ -1,4 +1,5 @@
  const fs=require('fs');
+ const chalk=require('chalk');
  const getNotes=function(){
 
  }
@@ -17,15 +18,15 @@ function addNotes (title,body){
             body:body
         });
         saveNote(notes);
-        console.log("Note is added!");
+        console.log(chalk.green.inverse("Note is added!"));
     }
     else{
-        console.log("Note title is taken");
+        console.log(chalk.red.inverse("Note title is taken"));
     }
     
 } 
 const saveNote=function(notes){
-    const dataJSON=JSON.stringify(notes)
+    const dataJSON=JSON.stringify(notes);
 
     fs.writeFileSync('notes.json',dataJSON);
 }
@@ -40,9 +41,35 @@ const loadnotes=function(){
         return  [];
     }
 }
- 
+const removeNote=function(title){
+    const notes=loadnotes();
+    var delnote;
+    const newnotes=notes.filter(function(note)
+    {
+        if(note.title===title)
+        {
+            delnote=note;
+            return false;
+        }
+        else
+        { 
+            return true;
+        }
+    }); 
+    if(delnote)
+    {
+        saveNote(newnotes);
+        console.log(chalk.green.inverse("Note removed"));
+    }
+    else
+    {
+        console.log(chalk.red.inverse("No such node is there."));
+    }
+    
+}
 
 module.exports = {
     getNotes: getNotes,
-    addNotes: addNotes
+    addNotes: addNotes,
+    removeNote:removeNote
 }
