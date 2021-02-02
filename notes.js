@@ -1,17 +1,27 @@
  const fs=require('fs');
  const chalk=require('chalk');
- const getNotes=function(){
 
+ const readNote=(title)=>{
+     const notes=loadnotes();
+     const rnote=notes.find((note)=>note.title===title);
+     if(rnote)
+     {
+         console.log(chalk.inverse(rnote.title));
+         console.log(rnote.body);
+     }
+     else{
+         console.log(chalk.red.inverse("No such note!"));
+     }
  }
-function addNotes (title,body){
+const addNotes =(title,body)=>{
     const notes=loadnotes();
-    const duplicate=notes.filter(function(note){
+    const duplicate=notes.find(function(note){
         if(title===note.title)
         return true;
         else 
         return false;
     });
-    if(duplicate.length===0)
+    if(!duplicate)
     {
         notes.push({
             title:title,
@@ -25,12 +35,11 @@ function addNotes (title,body){
     }
     
 } 
-const saveNote=function(notes){
+const saveNote=(notes)=>{
     const dataJSON=JSON.stringify(notes);
-
     fs.writeFileSync('notes.json',dataJSON);
 }
-const loadnotes=function(){
+const loadnotes=()=>{
     try{
         const dataBuffer=fs.readFileSync('notes.json');
         const dataJSON=dataBuffer.toString();
@@ -41,7 +50,7 @@ const loadnotes=function(){
         return  [];
     }
 }
-const removeNote=function(title){
+const removeNote=(title)=>{
     const notes=loadnotes();
     var delnote;
     const newnotes=notes.filter(function(note)
@@ -67,9 +76,16 @@ const removeNote=function(title){
     }
     
 }
-
+const listNotes=()=>{
+    const notes= loadnotes();
+    console.log(chalk.inverse("Your notes :"));
+    notes.forEach(function(note){
+        console.log(chalk.blue(note.title)+" - "+chalk.green(note.body));
+    })
+}
 module.exports = {
-    getNotes: getNotes,
+    readNote: readNote,
     addNotes: addNotes,
-    removeNote:removeNote
+    removeNote:removeNote,
+    listNotes:listNotes
 }
